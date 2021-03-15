@@ -1,6 +1,7 @@
 const admin = require("firebase-admin");
 var serviceAccount = require("./permission.json");
 
+
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
@@ -12,6 +13,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const firebase = require("firebase");
 const app = express();
+
 
 // Setting Body Parser
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
@@ -26,10 +28,6 @@ app.use(bodyParser({ limit: "50mb" }), cors({ origin: true }));
 app.get("/", (req, res) => {
   return res.render("home");
   // return res.status(200).send('home page');
-});
-
-app.get("/hello", (req, res) => {
-  return res.status(200).send("working");
 });
 
 // GET - GET DATA OF SINGLE PRODUCT WITH ID - API
