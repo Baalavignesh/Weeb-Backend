@@ -1,9 +1,9 @@
 const admin = require("firebase-admin");
 var serviceAccount = require("./permission.json");
 
-
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
+  storageBucket: "weeb-store-b5e25.appspot.com",
 });
 
 const db = admin.firestore();
@@ -11,9 +11,8 @@ const db = admin.firestore();
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const firebase = require("firebase");
+const firebase = require("firebase/app");
 const app = express();
-
 
 // Setting Body Parser
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
@@ -83,8 +82,6 @@ app.get("/api/product", (req, res) => {
   })();
 });
 
-
-
 // GET ALL DATA FOR UI
 
 app.get("/api/allproduct", (req, res) => {
@@ -122,11 +119,9 @@ app.get("/api/allproduct", (req, res) => {
   })();
 });
 
-
 // ***************************************************************************
 // This is the Post API part
 // ***************************************************************************
-
 
 // GET AND POST - CREATE DATA
 
@@ -139,25 +134,80 @@ app.get("/api/create", (req, res) => {
 app.post("/api/create", urlencodedParser, (req, res) => {
   (async () => {
     try {
+      let image = req.body.imagebase;
+
+
+      // One method. Uploading but not displaying
+      // let n = 23;
+      // image = image.slice(n);
+
+      // var stream = require("stream");
+      // var bufferStream = new stream.PassThrough();
+      // bufferStream.end(Buffer.from(image, "base64"));
+
+      // bufferStream.pipe(file.createWriteStream({
+      //   metadata: {
+      //     contentType: 'image/jpeg',
+      //     metadata: {
+      //       custom: 'metadata'
+      //     }
+      //   },
+      //   public: true,
+      //   // validation: "md5"
+      // }))
+      // .on('error', function(err) {})
+      // .on('finish', function() {
+      //   // The file upload is complete.
+      // });
+
+      // Second Method, same problem
+
+    mimeType = image.match(/data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+).*,.*/)[1];
+    base64EncodedImageString = image.replace(/^data:image\/\w+;base64,/, '');
+    for (let i = 1; i <= 30; i++) {
+      console.log(base64EncodedImageString.slice(0, i));
+    }
+    imageBuffer = Buffer.from(base64EncodedImageString, 'base64');
+
+      var bucket = admin.storage().bucket();
+
+      var file = bucket.file("my-image.jpeg");
+
+      file.save(
+        imageBuffer,
+        {
+          metadata: { contentType: mimeType },
+          public: true,
+          validation: "md5",
+        },
+        function (error) {
+          if (error) {
+            console.log('sed life')
+            console.log(error);
+          }
+          return "done";
+        }
+      );
+
+
+
       // We use req.body.name of the input tag in add_product.jsx input tags
-      console.log(req.body.name);
+      // console.log(req.body.name);
 
       // This is not working for me. Firebase storage
-      var storage = firebase.storage();
-      var storageRef = storage.ref();
 
       // This is uploadding the data to firebase, normal data. This is working fine
-      const ref = db.collection("products").doc();
-      let id = ref.id;
-      console.log("create");
-      await db.collection("products").doc(id).create({
-        p_id: id,
-        p_name: req.body.name,
-        p_type: req.body.type,
-        p_anime: req.body.anime,
-        p_description: req.body.description,
-        p_price: req.body.price,
-      });
+      // const ref = db.collection("products").doc();
+      // let id = ref.id;
+      // console.log("create");
+      // await db.collection("products").doc(id).create({
+      //   p_id: id,
+      //   p_name: req.body.name,
+      //   p_type: req.body.type,
+      //   p_anime: req.body.anime,
+      //   p_description: req.body.description,
+      //   p_price: req.body.price,
+      // });
       res.render("home");
     } catch (error) {
       console.log("error here");
