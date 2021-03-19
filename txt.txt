@@ -1,0 +1,100 @@
+I get the image and convert it to base64.
+```
+var file = input.files[0];
+var reader = new FileReader();
+
+reader.onload = function (e) {
+var image_as_text = e.target.result;
+```
+
+Once I call the post function the first 23 characters are removed from the base64.```data:image/jpeg;base64,``` Then a Buffer is created and the image is saved in firebase storage. The file is being uploaded but unable to view it. It doesn't generate an access token too. The file size is exactly the same. 
+
+
+```
+let image = req.body.imagebase;
+base64EncodedImageString = image.replace(/^data:image\/\w+;base64,/, '');
+
+imageBuffer = Buffer.from(base64EncodedImageString, 'base64');
+
+var bucket = admin.storage().bucket();
+var file = bucket.file("my-image.jpg");
+
+file.save(
+   imageBuffer,
+   {
+       metadata: { contentType: 'image/jpeg' },
+       public: true,
+       validation: "md5",
+    },
+    function (error) {
+      if (error) {
+        console.log('sed life')
+        console.log(error);
+      }
+      return "done";
+    }
+ );
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+      // One method. Uploading but not displaying
+      // let n = 23;
+      // image = image.slice(n);
+
+      // var stream = require("stream");
+      // var bufferStream = new stream.PassThrough();
+      // bufferStream.end(Buffer.from(image, "base64"));
+
+      // bufferStream.pipe(file.createWriteStream({
+      //   metadata: {
+      //     contentType: 'image/jpeg',
+      //     metadata: {
+      //       custom: 'metadata'
+      //     }
+      //   },
+      //   public: true,
+      //   // validation: "md5"
+      // }))
+      // .on('error', function(err) {})
+      // .on('finish', function() {
+      //   // The file upload is complete.
+      // });
+
+      // Second Method, same problem
+
+
+      
+
+    // imageBuffer = Buffer.from(base64EncodedImageString, 'base64');
+
+    //   var bucket = admin.storage().bucket();
+    //   var file = bucket.file("my-image.jpg");
+
+    //   file.save(
+    //     imageBuffer,
+    //     {
+    //       metadata: { contentType: 'image/jpeg' },
+    //       public: true,
+    //       validation: "md5",
+    //     },
+    //     function (error) {
+    //       if (error) {
+    //         console.log('sed life')
+    //         console.log(error);
+    //       }
+    //       return "done";
+    //     }
+    //   );
+
+

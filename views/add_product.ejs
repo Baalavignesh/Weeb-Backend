@@ -68,14 +68,12 @@
           reader.onload = function (e) {
             var image_as_text = e.target.result;
 
-// let n = 23;
-// image_as_text = image_as_text.slice(n);
+            let n = 23;
+            image_as_text = image_as_text.slice(n);
 
-
-            document.getElementById('base').value=image_as_text ; 
+            document.getElementById("base").value = image_as_text;
             // document.getElementById('display_image').src=e.target.result;
-
-          }
+          };
           console.log(reader.readAsDataURL(file));
         }
       }
@@ -126,7 +124,7 @@
         </div>
         <div class="form-group">
           <label for="imagebase"> Base 64 of Image </label>
-          <input type="text" name="imagebase" class="form-control" id="base"/>
+          <input type="text" name="imagebase" class="form-control" id="base" />
         </div>
         <input type="submit" class="btn btn-primary" />
       </form>
