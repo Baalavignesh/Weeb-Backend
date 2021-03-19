@@ -35,40 +35,52 @@
 
       table {
         background-color: cornsilk;
+        width: 100%;
+        table-layout: fixed;
+      }
+
+      td {
+        width: 10%;
       }
     </style>
     <%- include ('partials/navbar.ejs') %>
     <h1>All Products Here</h1>
 
-
-    <table class="table">
-      <thead class="thead-dark">
-        <tr>
-          <th scope="col">ID</th>
-          <th scope="col">Name</th>
-          <th scope="col">Type</th>
-          <th scope="col">Anime</th>
-          <th scope="col">Description</th>
-          <th scope="col">Price</th>
-          <th scope="col">#</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% data.forEach(function(item) { %>
+    <div style="overflow-x: auto">
+      <table class="table">
+        <thead class="thead-dark">
           <tr>
-            <td><input type="text" name = "id" value="<%=item.id %>" /> </td>
-            <td><input type="text" name = "name" value="<%=item.name %>" /> </td>
-            <td><input type="text" name = "type" value="<%=item.type %>" /> </td>
-            <td><input type="text" name = "anime" value="<%=item.anime %>" /> </td>
-            <td><input type="text" name = "description" value="<%=item.description %>" /> </td>
-            <td><input type="text" name = "price" value="<%=item.price %>" /> </td>
-            <td><input type="submit" value="update" class="btn btn-primary"/></td>
+            <th scope="col">ID</th>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Anime</th>
+            <th scope="col">Description</th>
+            <th scope="col">Price</th>
+            <th scope="col">Image Link</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% data.forEach(function(item) { %>
+          <tr>
+            <td><input type="text" name="id" value="<%=item.id %>" /></td>
+            <td><input type="text" name="name" value="<%=item.name %>" /></td>
+            <td><input type="text" name="type" value="<%=item.type %>" /></td>
+            <td><input type="text" name="anime" value="<%=item.anime %>" /></td>
+            <td>
+              <input
+                type="text"
+                name="description"
+                value="<%=item.description %>"
+              />
+            </td>
+            <td width="40%">
+              <input type="text" name="price" value="<%=item.price %>" />
+            </td>
+            <td><input type="text" name="url" value="<%=item.url %>" /></td>
           </tr>
           <% }); %>
-      </tbody>
-    </table>
-
-
-  
+        </tbody>
+      </table>
+    </div>
   </body>
 </html>

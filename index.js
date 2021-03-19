@@ -13,6 +13,8 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const firebase = require("firebase/app");
 const app = express();
+const stream = require("stream");
+const { type } = require("os");
 
 // Setting Body Parser
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
@@ -67,6 +69,7 @@ app.get("/api/product", (req, res) => {
             description: doc.data().p_description,
             price: doc.data().p_price,
             anime: doc.data().p_anime,
+            url: doc.data().p_image,
           };
 
           response.push(product);
@@ -104,6 +107,7 @@ app.get("/api/allproduct", (req, res) => {
             description: doc.data().p_description,
             price: doc.data().p_price,
             anime: doc.data().p_anime,
+            url: doc.data().p_image,
           };
 
           response.push(product);
@@ -134,81 +138,95 @@ app.get("/api/create", (req, res) => {
 app.post("/api/create", urlencodedParser, (req, res) => {
   (async () => {
     try {
+      // We use req.body.name of the input tag in add_product.jsx input tags
+      console.log(req.body.name);
       let image = req.body.imagebase;
 
+      let imageUrl;
 
-      // One method. Uploading but not displaying
-      // let n = 23;
-      // image = image.slice(n);
+      let promise = new Promise(function (resolve, reject) {
+        console.log("step 1 - uploading image");
+        let bufferStream = new stream.PassThrough();
+        bufferStream.end(new Buffer.from(image, "base64"));
 
-      // var stream = require("stream");
-      // var bufferStream = new stream.PassThrough();
-      // bufferStream.end(Buffer.from(image, "base64"));
+        // Retrieve default storage bucket
+        let bucket = admin.storage().bucket();
 
-      // bufferStream.pipe(file.createWriteStream({
-      //   metadata: {
-      //     contentType: 'image/jpeg',
-      //     metadata: {
-      //       custom: 'metadata'
-      //     }
-      //   },
-      //   public: true,
-      //   // validation: "md5"
-      // }))
-      // .on('error', function(err) {})
-      // .on('finish', function() {
-      //   // The file upload is complete.
-      // });
+        // Unique File Name
+        const fileName = new Date().valueOf();
+        let file = bucket.file(fileName.toString());
+        // Start a Stream and Upload the file
+        bufferStream
+          .pipe(
+            file.createWriteStream({
+              metadata: {
+                contentType: "image/jpeg",
+              },
+            })
+          )
+          .on("error", (error) => {
+            console.log("error in uploading picture");
+            reject("error in uploading picture");
+          })
+          .on("finish", (done) => {
+            // The file upload is complete.
+            console.log(typeof file);
+            console.log("Image successfully uploaded");
 
-      // Second Method, same problem
+            try {
+              console.log("trying");
+              const config = {
+                action: "read",
+                expires: "03-01-2500",
+              };
+              console.log("getting url");
 
-    mimeType = image.match(/data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+).*,.*/)[1];
-    base64EncodedImageString = image.replace(/^data:image\/\w+;base64,/, '');
-    for (let i = 1; i <= 30; i++) {
-      console.log(base64EncodedImageString.slice(0, i));
-    }
-    imageBuffer = Buffer.from(base64EncodedImageString, 'base64');
+              file.getSignedUrl(config, function (error, url) {
+                console.log("bruh");
+                if (error) {
+                  console.log("problem inside");
+                  console.log(error);
+                  reject(error);
+                }
+                console.log("download url ", url);
+                imageUrl = url;
+                resolve(url);
+              });
+            } catch (err) {
+              console.log("error getting url");
+              console.log(err);
+            }
+          });
+      });
 
-      var bucket = admin.storage().bucket();
+      (async function () {
+        let received = await promise;
+        console.log(typeof received);
+        console.log(received);
 
-      var file = bucket.file("my-image.jpeg");
+        // This is uploadding the data to firebase, normal data. This is working fine
 
-      file.save(
-        imageBuffer,
-        {
-          metadata: { contentType: mimeType },
-          public: true,
-          validation: "md5",
-        },
-        function (error) {
-          if (error) {
-            console.log('sed life')
-            console.log(error);
-          }
-          return "done";
+        try {
+          // console.log('step 3 - uploading all data')
+
+          const ref = db.collection("products").doc();
+          let id = ref.id;
+          console.log("create");
+          await db.collection("products").doc(id).create({
+            p_id: id,
+            p_name: req.body.name,
+            p_type: req.body.type,
+            p_anime: req.body.anime,
+            p_description: req.body.description,
+            p_price: req.body.price,
+            p_image: received,
+          });
+          res.render("home");
+        } catch (err) {
+          console.log("error updating data into firestore");
+          console.log(err);
         }
-      );
-
-
-
-      // We use req.body.name of the input tag in add_product.jsx input tags
-      // console.log(req.body.name);
-
-      // This is not working for me. Firebase storage
-
-      // This is uploadding the data to firebase, normal data. This is working fine
-      // const ref = db.collection("products").doc();
-      // let id = ref.id;
-      // console.log("create");
-      // await db.collection("products").doc(id).create({
-      //   p_id: id,
-      //   p_name: req.body.name,
-      //   p_type: req.body.type,
-      //   p_anime: req.body.anime,
-      //   p_description: req.body.description,
-      //   p_price: req.body.price,
-      // });
-      res.render("home");
+      })();
     } catch (error) {
       console.log("error here");
       console.log(error);
@@ -266,25 +284,3 @@ const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Listening to port ${port}`));
 
 // exports.app = functions.https.onRequest(app);
-
-// UNWANTED
-
-// const gc = new Storage({
-//     keyFilename: path.join(__dirname, "./permission.json"),
-//     projectId: "weeb-store-b5e25",
-//   });
-
-// gc.getBuckets().then((x) => console.log(x));
-
-// const weebBucket = gc.bucket("weeb-store-b5e25.appspot.com");
-//   var storageRef = storage.storage({
-//     projectId: "weeb-store-b5e25",
-//     keyFilename: "/permission.json",
-//   });
-
-//   const bucket = storage.bucket("weeb-store-b5e25.appspot.com");
-
-//   const [url] = await storage
-//     .bucket(bucketName)
-//     .file(filename)
-//     .getSignedUrl(options);
