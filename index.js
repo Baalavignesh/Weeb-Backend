@@ -63,7 +63,7 @@ app.get("/api/product", (req, res) => {
           // console.log(doc);
 
           let product = {
-            id: doc.id,
+            p_id: doc.id,
             p_name: doc.data().p_name,
             p_type: doc.data().p_type,
             p_description: doc.data().p_description,
@@ -101,7 +101,7 @@ app.get("/api/allproduct", (req, res) => {
           // console.log(doc);
 
           let product = {
-            id: doc.id,
+            p_id: doc.id,
             p_name: doc.data().p_name,
             p_type: doc.data().p_type,
             p_description: doc.data().p_description,
