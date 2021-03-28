@@ -64,12 +64,12 @@ app.get("/api/product", (req, res) => {
 
           let product = {
             id: doc.id,
-            name: doc.data().p_name,
-            type: doc.data().p_type,
-            description: doc.data().p_description,
-            price: doc.data().p_price,
-            anime: doc.data().p_anime,
-            url: doc.data().p_image,
+            p_name: doc.data().p_name,
+            p_type: doc.data().p_type,
+            p_description: doc.data().p_description,
+            p_price: doc.data().p_price,
+            p_anime: doc.data().p_anime,
+            p_image: doc.data().p_image,
           };
 
           response.push(product);
