@@ -63,20 +63,20 @@
           <% data.forEach(function(item) { %>
           <tr>
             <td><input type="text" name="id" value="<%=item.id %>" /></td>
-            <td><input type="text" name="name" value="<%=item.name %>" /></td>
-            <td><input type="text" name="type" value="<%=item.type %>" /></td>
-            <td><input type="text" name="anime" value="<%=item.anime %>" /></td>
+            <td><input type="text" name="name" value="<%=item.p_name %>" /></td>
+            <td><input type="text" name="type" value="<%=item.p_type %>" /></td>
+            <td><input type="text" name="anime" value="<%=item.p_anime %>" /></td>
             <td>
               <input
                 type="text"
                 name="description"
-                value="<%=item.description %>"
+                value="<%=item.p_description %>"
               />
             </td>
             <td width="40%">
-              <input type="text" name="price" value="<%=item.price %>" />
+              <input type="text" name="price" value="<%=item.p_price %>" />
             </td>
-            <td><input type="text" name="url" value="<%=item.url %>" /></td>
+            <td><input type="text" name="url" value="<%=item.p_url %>" /></td>
           </tr>
           <% }); %>
         </tbody>
